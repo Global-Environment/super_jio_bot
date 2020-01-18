@@ -1,13 +1,12 @@
 const { CREATE_MENU_MESSAGES }  = require('../messages')
 const { createRestaurantObject } = require('../firebase/firestore/restaurants')
+const { Chance } = require('../Chance')
 
 let menuName
 let state
 let category
 let item
 let categories = []
-
-
 
 const createRestaurant = async (ctx, next) => {
     await ctx.reply(CREATE_MENU_MESSAGES.newMenuIntroduction)
@@ -96,10 +95,13 @@ const createItem2 = async (ctx, next) => {
         console.log(menuName)
         console.log(categories[0].items)
         await createRestaurantObject({
+            id: Chance.prototype.string(),
+            userIds: [ctx.from.id],
             name: menuName,
             categories: categories
         })
         categories = []
+        ctx.reply(`New Menu for ${menuName} has successfully been created!`)
     } else {
         ctx.reply(CREATE_MENU_MESSAGES.newItemIntroduction(ctx.message.text))
         category = {

@@ -1,5 +1,5 @@
 exports.CREATE_MENU_MESSAGES = Object.freeze({
-    newMenuIntroduction:'To add a new menu, please first enter the name of the restaurant you would' +
+    newMenuIntroduction:'To add a new menu, please first enter the name of the restaurant you would ' +
         'like to add. Or use the /cancel command to cancel the creation.',
     newCategoryIntroduction:'Now let\'s add a new category for your Menu. Please enter the name of your ' +
         'category or cancel the process with /cancel.',
