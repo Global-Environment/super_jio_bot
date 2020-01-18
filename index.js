@@ -9,13 +9,32 @@ main = async () => { const bot = new Telegraf(process.env.BOT_TOKEN)
 
     bot.use(usersMiddleware.createUser)
 
+    bot.command('add', (ctx) => addCommand(ctx))
     bot.help((ctx) => ctx.reply('Send me a sticker'))
     bot.on('sticker', (ctx) => ctx.reply('👍'))
     bot.hears('hi', (ctx) => ctx.reply('Hey there'))
 
+    function startJio(ctx, item) {
+        if (ongoingJio.key) {
+            ctx.reply("There is an ongoing jio for " + ongoingJio.value.name + "!")
+        } else {
+            ongoingJio.key = true;
+            ongoingJio.value = item;
+            ctx.reply("Jio started!")
+        }
+    }
+
+    function addCommand(ctx) {
+        if (!ongoingJio.key) {
+            ctx.reply("There are no ongoing jios!")
+        } else {
+           
+        }
+    }
+
     const mainMenu = new TelegrafInlineMenu(ctx => `Welcome to Super Jio, ${ctx.from.first_name}!`)
     const restaurantMenu = new TelegrafInlineMenu(ctx =>  'Which restaurant would you like to order from?')
-    const addMenu = new TelegrafInlineMenu(ctx => "What would you like to eat for supper :D")
+
 
     mainMenu.setCommand('start')
 
@@ -33,18 +52,8 @@ main = async () => { const bot = new Telegraf(process.env.BOT_TOKEN)
     console.log(restaurants)
 
     restaurants.forEach(item => restaurantMenu.simpleButton(item.name, item.name, {
-        doFunc: ctx => startJio(ctx, item.name)
+        doFunc: ctx => startJio(ctx, item)
     }))
-
-    function startJio(ctx, item) {
-        if (ongoingJio.key) {
-            ctx.reply("There is an ongoing jio for " + ongoingJio.value + "!")
-        } else {
-            ongoingJio.key = true;
-            ongoingJio.value = item;
-            ctx.reply("Jio started!")
-        }
-    }
 
     bot.launch()
 
