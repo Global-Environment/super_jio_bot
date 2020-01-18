@@ -1,6 +1,9 @@
 const Telegraf = require('telegraf')
 const TelegrafInlineMenu = require('telegraf-inline-menu')
+const Markup = require('telegraf/markup')
 require('dotenv').config()
+
+const Telegram = require('telegraf/telegram')
 
 const bot = new Telegraf(process.env.BOT_TOKEN)
 
@@ -10,6 +13,9 @@ bot.hears('hi', (ctx) => ctx.reply('Hey there'))
 
 const mainMenu = new TelegrafInlineMenu(ctx => `Welcome to Super Jio, ${ctx.from.first_name}!`)
 const restaurantMenu = new TelegrafInlineMenu(ctx =>  'Which restaurant would you like to order from?')
+
+// Replace the String below with a function that lists out all users who haven't paid yet
+const paymentMenu = new TelegrafInlineMenu(ctx => 'People who have yet to pay:\n')
 
 mainMenu.setCommand('start')
 
@@ -28,6 +34,19 @@ const restaurants = ['Al Amaans', 'McDonalds', 'Swee Choon']
 restaurants.forEach(item => restaurantMenu.simpleButton(item, item, {
     doFunc: ctx => ctx.reply('Jio started!')
 }))
+
+restaurantMenu.submenu('Display Payment Message!', 'd', paymentMenu)
+
+const telegram = new Telegram("921913620:AAHLeb6KTsfzUpSQhXT1wCen9uvMc8CEghk", null, true)
+
+function test(ctx) {
+    ctx.editMessageText("@" + ctx.from.username + " has paid!")
+    // ctx.editMessageReplyMarkup(Markup.inlineKeyboard([Markup.callbackButton('Paid!', ctx.from.username)]))
+}
+
+paymentMenu.simpleButton('I have paid!', 'p', {
+    doFunc: (ctx) => test(ctx)
+})
 
 bot.launch()
 
