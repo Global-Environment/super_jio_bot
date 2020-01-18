@@ -1,12 +1,21 @@
+require('dotenv').config()
 const Telegraf = require('telegraf')
 const TelegrafInlineMenu = require('telegraf-inline-menu')
+
 const Markup = require('telegraf/markup')
 require('dotenv').config()
+
+const usersMiddleware = require('./middleware/users')
+
+const createRestaurantMiddleware = require('./middleware/create-restaurant')
 
 const Telegram = require('telegraf/telegram')
 
 const bot = new Telegraf(process.env.BOT_TOKEN)
 
+bot.use(usersMiddleware.createUser)
+
+bot.start((ctx) => ctx.reply('Welcome to Super Jio!'))
 bot.help((ctx) => ctx.reply('Send me a sticker'))
 bot.on('sticker', (ctx) => ctx.reply('👍'))
 bot.hears('hi', (ctx) => ctx.reply('Hey there'))
@@ -28,6 +37,8 @@ mainMenu.simpleButton('Add new Restaurant', 'b',{
 mainMenu.simpleButton('Statistics', 'c', {
     doFunc: ctx => ctx.reply('Working on it....')
 })
+
+bot.on('message', createRestaurantMiddleware.handle_message)
 
 const restaurants = ['Al Amaans', 'McDonalds', 'Swee Choon']
 
