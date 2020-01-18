@@ -2,6 +2,10 @@ require('dotenv').config()
 const Telegraf = require('telegraf')
 const TelegrafInlineMenu = require('telegraf-inline-menu')
 const usersMiddleware = require('./middleware/users')
+<<<<<<< HEAD
+const createRestaurantMiddleware = require('./middleware/create-restaurant')
+=======
+>>>>>>> e46af9aa6d486975993d24e9abae0273758c2ac1
 
 const bot = new Telegraf(process.env.BOT_TOKEN)
 
@@ -27,11 +31,17 @@ mainMenu.simpleButton('Statistics', 'c', {
     doFunc: ctx => ctx.reply('Working on it....')
 })
 
+<<<<<<< HEAD
+bot.on('message', createRestaurantMiddleware.handle_message)
+
+bot.launch()
+=======
 const restaurants = ['Al Amaans', 'McDonalds', 'Swee Choon']
 
 restaurants.forEach(item => restaurantMenu.simpleButton(item, item, {
     doFunc: ctx => ctx.reply('Jio started!')
 }))
+>>>>>>> e46af9aa6d486975993d24e9abae0273758c2ac1
 
 bot.launch()
 
