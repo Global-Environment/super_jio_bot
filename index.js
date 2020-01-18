@@ -1,68 +1,98 @@
 require('dotenv').config()
 const Telegraf = require('telegraf')
 const TelegrafInlineMenu = require('telegraf-inline-menu')
-
 const Markup = require('telegraf/markup')
+const bot = new Telegraf(process.env.BOT_TOKEN)
+
 require('dotenv').config()
 
 const usersMiddleware = require('./middleware/users')
+const {getAllRestaurants} = require('./firebase/firestore/restaurants')
 
-const createRestaurantMiddleware = require('./middleware/create-restaurant')
 
-const Telegram = require('telegraf/telegram')
+main = async () => {
 
-const bot = new Telegraf(process.env.BOT_TOKEN)
+    var ongoingJio = {false:null}
+    const createRestaurantMiddleware = require('./middleware/create-restaurant')
 
-bot.use(usersMiddleware.createUser)
+    const Telegram = require('telegraf/telegram')
 
-bot.start((ctx) => ctx.reply('Welcome to Super Jio!'))
-bot.help((ctx) => ctx.reply('Send me a sticker'))
-bot.on('sticker', (ctx) => ctx.reply('👍'))
-bot.hears('hi', (ctx) => ctx.reply('Hey there'))
 
-const mainMenu = new TelegrafInlineMenu(ctx => `Welcome to Super Jio, ${ctx.from.first_name}!`)
-const restaurantMenu = new TelegrafInlineMenu(ctx =>  'Which restaurant would you like to order from?')
+    bot.use(usersMiddleware.createUser)
 
-// Replace the String below with a function that lists out all users who haven't paid yet
-const paymentMenu = new TelegrafInlineMenu(ctx => 'People who have yet to pay:\n')
+    bot.command('add', (ctx) => addCommand(ctx))
+    bot.help((ctx) => ctx.reply('Send me a sticker'))
+    bot.on('sticker', (ctx) => ctx.reply('👍'))
+    bot.hears('hi', (ctx) => ctx.reply('Hey there'))
 
-mainMenu.setCommand('start')
+    function startJio(ctx, item) {
+        if (ongoingJio.key) {
+            ctx.reply("There is an ongoing jio for " + ongoingJio.value.name + "!")
+        } else {
+            ongoingJio.key = true;
+            ongoingJio.value = item;
+            ctx.reply("Jio started!")
+        }
+    }
 
-mainMenu.submenu('Start a Jio!', 'r', restaurantMenu)
+    function addCommand(ctx) {
+        if (!ongoingJio.key) {
+            ctx.reply("There are no ongoing jios!")
+        } else {
 
-mainMenu.simpleButton('Add new Restaurant', 'b',{
-    doFunc: ctx => ctx.reply('Working On it....')
-})
+        }
+    }
 
-mainMenu.simpleButton('Statistics', 'c', {
-    doFunc: ctx => ctx.reply('Working on it....')
-})
 
-bot.on('message', createRestaurantMiddleware.handle_message)
+    const mainMenu = new TelegrafInlineMenu(ctx => `Welcome to Super Jio, ${ctx.from.first_name}!`)
+    const restaurantMenu = new TelegrafInlineMenu(ctx =>  'Which restaurant would you like to order from?')
+    // Replace the String below with a function that lists out all users who haven't paid yet
+    const paymentMenu = new TelegrafInlineMenu(ctx => 'People who have yet to pay:\n')
 
-const restaurants = ['Al Amaans', 'McDonalds', 'Swee Choon']
+    mainMenu.setCommand('start')
 
-restaurants.forEach(item => restaurantMenu.simpleButton(item, item, {
-    doFunc: ctx => ctx.reply('Jio started!')
-}))
 
-restaurantMenu.submenu('Display Payment Message!', 'd', paymentMenu)
+    mainMenu.submenu('Start a Jio!', 'r', restaurantMenu)
 
-const telegram = new Telegram("921913620:AAHLeb6KTsfzUpSQhXT1wCen9uvMc8CEghk", null, true)
 
-function test(ctx) {
-    ctx.editMessageText("@" + ctx.from.username + " has paid!")
-    // ctx.editMessageReplyMarkup(Markup.inlineKeyboard([Markup.callbackButton('Paid!', ctx.from.username)]))
+    mainMenu.simpleButton('Add new Restaurant', 'b',{
+        doFunc: ctx => ctx.reply('Working on it....')
+    })
+
+    bot.on('message', createRestaurantMiddleware.handle_message)
+
+
+    mainMenu.simpleButton('Statistics', 'c', {
+        doFunc: ctx => ctx.reply('Working on it....')
+    })
+
+
+    const restaurants = await getAllRestaurants()
+
+    restaurants.forEach(item => restaurantMenu.simpleButton(item.name, item.name, {
+        doFunc: ctx => startJio(ctx, item)
+    }))
+
+    restaurantMenu.submenu('Display Payment Message!', 'd', paymentMenu)
+
+    const telegram = new Telegram("921913620:AAHLeb6KTsfzUpSQhXT1wCen9uvMc8CEghk", null, true)
+
+    function test(ctx) {
+        ctx.editMessageText("@" + ctx.from.username + " has paid!")
+        // ctx.editMessageReplyMarkup(Markup.inlineKeyboard([Markup.callbackButton('Paid!', ctx.from.username)]))
+    }
+
+    paymentMenu.simpleButton('I have paid!', 'p', {
+        doFunc: (ctx) => test(ctx)
+    })
+
+    bot.launch()
+
+    bot.use(mainMenu.init({
+        backButtonText: 'back…',
+        mainMenuButtonText: 'Back to Main Menu'
+    }))
+    console.log('Telegram bot is active')
 }
 
-paymentMenu.simpleButton('I have paid!', 'p', {
-    doFunc: (ctx) => test(ctx)
-})
-
-bot.launch()
-
-bot.use(mainMenu.init({
-    backButtonText: 'back…',
-    mainMenuButtonText: 'Back to Main Menu'
-}))
-console.log('Telegram bot is active')
+main()
