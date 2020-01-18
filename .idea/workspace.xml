@@ -2,6 +2,11 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="5dbb1001-6d2a-4808-b439-b7f8c2bf7ab5" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/data/user-data.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/firebase/firestore/common.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/firebase/firestore/firestore.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/firebase/firestore/users.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/middleware/users.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/index.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />

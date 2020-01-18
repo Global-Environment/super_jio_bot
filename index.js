@@ -1,8 +1,12 @@
+require('dotenv').config()
 const Telegraf = require('telegraf')
 const TelegrafInlineMenu = require('telegraf-inline-menu')
-require('dotenv').config()
+const usersMiddleware = require('./middleware/users')
+
 
 const bot = new Telegraf(process.env.BOT_TOKEN)
+
+bot.use(usersMiddleware.createUser)
 
 bot.start((ctx) => ctx.reply('Welcome to Super Jio!'))
 bot.help((ctx) => ctx.reply('Send me a sticker'))
