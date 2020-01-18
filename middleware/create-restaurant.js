@@ -5,7 +5,7 @@ let menuName
 let state
 let category
 let item
-const categories = []
+let categories = []
 
 
 
@@ -99,6 +99,7 @@ const createItem2 = async (ctx, next) => {
             name: menuName,
             categories: categories
         })
+        categories = []
     } else {
         ctx.reply(CREATE_MENU_MESSAGES.newItemIntroduction(ctx.message.text))
         category = {
