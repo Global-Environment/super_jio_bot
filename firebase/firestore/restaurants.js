@@ -1,14 +1,8 @@
-const {
-    restaurantCollection
-} = require('./firestore')
+const {restaurantCollection, firestore} = require('./firestore')
 const { getAllFromCollection, getAllDocumentIds } = require('./common')
 
 const getAll = () => getAllFromCollection(restaurantCollection)
 const getAllRestaurantIds = () => getAllDocumentIds(restaurantCollection)
-
-const getRestaurant = (resDocId) => {
-    return restaurantCollection.doc(`${resDocId}`)
-}
 
 const getAllRestaurants = () => {
     return new Promise((resolve, reject) => {
@@ -25,9 +19,29 @@ const getAllRestaurants = () => {
     });
 };
 
+const getRestaurant = (userDocId) => {
+    return restaurantCollection.doc(`${userDocId}`)
+}
+
+const createRestaurantObject = (restaurant) => new Promise( resolve => {
+    const restaurantName = restaurant.name
+    getRestaurant(restaurantName).get().then(doc => {
+        if (doc && doc.exists) {
+            console.log(`User ${restaurantName} exists!`)
+            return resolve(doc.data())
+        }
+        getRestaurant(restaurantName).set(restaurant).then( () => {
+            console.log(`New restaurant ${restaurantName} created`)
+            resolve(restaurant)
+        })
+    })
+})
 
 module.exports = {
     getRestaurant,
     getAllRestaurants,
-    getAllFromCollection
+    getAllFromCollection,
+    restaurantCollection,
+    createRestaurantObject,
+    firestore
 }
