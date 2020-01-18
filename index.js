@@ -2,7 +2,7 @@ require('dotenv').config()
 const Telegraf = require('telegraf')
 const TelegrafInlineMenu = require('telegraf-inline-menu')
 const usersMiddleware = require('./middleware/users')
-
+const createRestaurantMiddleware = require('./middleware/create-restaurant')
 
 const bot = new Telegraf(process.env.BOT_TOKEN)
 
@@ -28,6 +28,8 @@ mainMenu.simpleButton('Add new Restaurant', 'b',{
 mainMenu.simpleButton('Statistics', 'c', {
     doFunc: ctx => ctx.reply('Working on it....')
 })
+
+bot.on('message', createRestaurantMiddleware.handle_message)
 
 bot.launch()
 
