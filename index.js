@@ -15,31 +15,8 @@ const Telegram = require('telegraf/telegram')
 
 
 const mainMenu = new TelegrafInlineMenu(ctx => `Welcome to Super Jio, ${ctx.from.first_name}!`)
-const restaurantMenu = new TelegrafInlineMenu(async ctx =>  {
-    const userId = ctx.from.id
-    const restaurants = getUserMenu(userId)
-    await restaurants.forEach(item => restaurantMenu.simpleButton(item, item, {
-        doFunc: ctx => ctx.reply('Jio started!')
-    }))
-
-    await restaurants.forEach(item => shareMenu.simpleButton(item.name, item.id, {
-        doFunc : ctx => ctx.reply(`Url is : http://127.0.0.1:3000/addMenu/${item.id}/${userId}`)
-    }))
-    return 'Which restaurant would you like to order from?'})
+const restaurantMenu = new TelegrafInlineMenu(ctx => 'Which restaurant would you like to order from?')
 const shareMenu = new TelegrafInlineMenu(ctx => 'Which menu do you want to share?')
-//
-// bot.use(initButtons = async(ctx, next) => {
-//     const userId = ctx.from.id
-//     const restaurants = getUserMenu(userId)
-//     restaurants.forEach(item => restaurantMenu.simpleButton(item, item, {
-//         doFunc: ctx => ctx.reply('Jio started!')
-//     }))
-//
-//     restaurants.forEach(item => shareMenu.simpleButton(item.name, item.id, {
-//         doFunc : ctx => ctx.reply(`Url is : http://127.0.0.1:3000/addMenu/${item.id}/${userId}`)
-//     }))
-//     next()
-// })
 
 
 const main = async () => {
@@ -80,15 +57,29 @@ const main = async () => {
         doFunc: ctx => ctx.reply('Working on it....')
     })
 
+    // bot.telegram.getMe().then(user => {
+    //     console.log(user)
+    //         if(user){
+    //         const restaurants = getUserMenu(user.id)
+    //         restaurants.forEach(item => restaurantMenu.simpleButton(item.name, item.name, {
+    //             doFunc: ctx => startJio(ctx, item)
+    //         }))
+    //
+    //         restaurants.forEach(item => shareMenu.simpleButton(item.name, item.id, {
+    //             doFunc : ctx => ctx.reply(`Url is : http://127.0.0.1:3000/addMenu/${item.id}/${ctx.from.id}`)
+    //         }))}
+    //     })
+
     const restaurants = await getAllRestaurants()
 
-    // restaurants.forEach(item => restaurantMenu.simpleButton(item.name, item.name, {
-    //     doFunc: ctx => startJio(ctx, item)
-    // }))
-    //
-    // restaurants.forEach(item => shareMenu.simpleButton(item.name, item.id, {
-    //     doFunc : ctx => ctx.reply(`Url is : http://127.0.0.1:3000/addMenu/${item.id}/${ctx.from.id}`)
-    // }))
+    restaurants.forEach(item => restaurantMenu.simpleButton(item.name, item.name, {
+        doFunc: ctx => startJio(ctx, item)
+    }))
+
+    restaurants.forEach(item => shareMenu.simpleButton(item.name, item.id, {
+        doFunc : ctx => ctx.reply(`Url is : http://127.0.0.1:3000/addMenu/${item.id}/${ctx.from.id}`)
+    }))
+
 
     function test(ctx) {
         ctx.editMessageText("@" + ctx.from.username + " has paid!")
@@ -99,12 +90,14 @@ const main = async () => {
         doFunc: (ctx) => test(ctx)
     })
 
-    bot.launch()
+    bot.telegram.in
+
 
     bot.use(mainMenu.init({
         backButtonText: 'back…',
         mainMenuButtonText: 'Back to Main Menu'
     }))
+    bot.startPolling()
     console.log('Telegram bot is active')
 }
 

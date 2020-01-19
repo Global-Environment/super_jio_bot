@@ -113,7 +113,7 @@ const createItem2 = async (ctx, next) => {
 }
 
 exports.handle_message = async(ctx, next) => {
-    if(ctx.message && ctx.message.text === '/newMenu') {
+    if(ctx.message && ctx.message.text === '/newmenu') {
         await createRestaurant(ctx, next)
     } else if (state === 'makeCategory1') {
         await createFirstCategory(ctx, next)
